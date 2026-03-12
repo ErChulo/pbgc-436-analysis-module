@@ -1,0 +1,305 @@
+{
+  "schemaVersion": "v0.3.0",
+  "dataVersion": "v0.3.0",
+
+  "caseHeader": {
+    "planName": "ACME Salaried Pension Plan",
+    "ein": "12-3456789",
+    "pn": "001",
+    "pbgcCaseNo": "PBGC-2021-000123",
+    "dopt": "2021-10-31",
+    "dotr": "2021-11-15",
+    "bpd": "2022-01-01",
+    "dobf": "1995-01-01"
+  },
+
+  "plan": {
+    "planYear": {
+      "startMMDD": "01-01",
+      "endsMMDD": "12-31",
+      "definitionDocRef": {
+        "docId": "DOC-PLAN-2019",
+        "ipsRef": "IPS-0001",
+        "page": 12,
+        "section": "Definitions - Plan Year",
+        "quote": "Plan Year means the 12-consecutive-month period ending December 31."
+      }
+    },
+    "isCBAPlan": false,
+    "hasBankruptcy": true
+  },
+
+  "documents": [
+    {
+      "docId": "DOC-PLAN-2019",
+      "docType": "PLAN_DOC",
+      "title": "2019 Restatement of ACME Salaried Pension Plan",
+      "docDate": "2019-01-01",
+      "effectiveDate": "2019-01-01",
+      "ipsRef": "IPS-0001",
+      "fileName": "ACME_Plan_2019_Restatement.pdf",
+      "pageCount": 220,
+      "notes": "Contains Plan Year definition and forms of payment."
+    },
+    {
+      "docId": "DOC-SB-2019",
+      "docType": "SCHEDULE_SB",
+      "title": "Form 5500 Schedule SB - Plan Year 2019",
+      "docDate": "2020-10-12",
+      "ipsRef": "IPS-0101",
+      "fileName": "5500_SB_2019.pdf",
+      "pageCount": 15,
+      "notes": "Contains AFTAP percent and actuary signature date."
+    },
+    {
+      "docId": "DOC-SB-2020",
+      "docType": "SCHEDULE_SB",
+      "title": "Form 5500 Schedule SB - Plan Year 2020",
+      "docDate": "2021-10-08",
+      "ipsRef": "IPS-0102",
+      "fileName": "5500_SB_2020.pdf",
+      "pageCount": 15
+    },
+    {
+      "docId": "DOC-SB-2021",
+      "docType": "SCHEDULE_SB",
+      "title": "Form 5500 Schedule SB - Plan Year 2021",
+      "docDate": "2022-08-22",
+      "ipsRef": "IPS-0103",
+      "fileName": "5500_SB_2021.pdf",
+      "pageCount": 15
+    },
+    {
+      "docId": "DOC-AMEND-2020-01",
+      "docType": "AMENDMENT",
+      "title": "Amendment Increasing Benefits Effective 2020-01-01",
+      "docDate": "2020-03-15",
+      "effectiveDate": "2020-01-01",
+      "adoptionDate": "2020-03-15",
+      "ipsRef": "IPS-0201",
+      "fileName": "Amendment_2020_03_15.pdf"
+    },
+    {
+      "docId": "DOC-BK-001",
+      "docType": "BANKRUPTCY_DOC",
+      "title": "Bankruptcy Petition / Court Filing",
+      "docDate": "2020-06-30",
+      "ipsRef": "IPS-0301",
+      "fileName": "Bankruptcy_Filing.pdf"
+    },
+    {
+      "docId": "DOC-APP-001",
+      "docType": "BENEFIT_APPLICATION",
+      "title": "Participant Distribution Election Package",
+      "docDate": "2021-09-01",
+      "ipsRef": "IPS-0401",
+      "fileName": "Participant_APP_001.pdf"
+    },
+    {
+      "docId": "DOC-PAYREG-2021",
+      "docType": "PAYMENT_REGISTER",
+      "title": "Benefit Payment Register - 2021",
+      "docDate": "2021-12-31",
+      "ipsRef": "IPS-0501",
+      "fileName": "PaymentRegister_2021.xlsx"
+    }
+  ],
+
+  "aftap": {
+    "coverage": {
+      "firstPlanYear": 2019,
+      "lastPlanYear": 2021
+    },
+    "certifications": [
+      {
+        "planYear": 2019,
+        "certificationId": "AFTAP-2019-01",
+        "certificationDate": "2021-07-01",
+        "aftapType": "percent",
+        "aftapPercent": 85.28,
+        "isRecertification": false,
+        "isMaterialChange": false,
+        "source": "SB5500",
+        "docRef": {
+          "docId": "DOC-SB-2019",
+          "ipsRef": "IPS-0101",
+          "page": 8,
+          "quote": "AFTAP: 85.28%; certification date 07/01/2021."
+        }
+      },
+      {
+        "planYear": 2020,
+        "certificationId": "AFTAP-2020-01",
+        "certificationDate": "2021-09-15",
+        "aftapType": "percent",
+        "aftapPercent": 108.52,
+        "isRecertification": false,
+        "isMaterialChange": false,
+        "source": "SB5500",
+        "docRef": {
+          "docId": "DOC-SB-2020",
+          "ipsRef": "IPS-0102",
+          "page": 8,
+          "quote": "AFTAP: 108.52%; certification date 09/15/2021."
+        }
+      },
+      {
+        "planYear": 2021,
+        "certificationId": "AFTAP-2021-01",
+        "certificationDate": "2021-09-16",
+        "aftapType": "percent",
+        "aftapPercent": 117.32,
+        "isRecertification": false,
+        "isMaterialChange": false,
+        "source": "SB5500",
+        "docRef": {
+          "docId": "DOC-SB-2021",
+          "ipsRef": "IPS-0103",
+          "page": 8,
+          "quote": "AFTAP: 117.32%; certification date 09/16/2021."
+        }
+      }
+    ],
+    "missingYears": []
+  },
+
+  "planFeatures": {
+    "hasAccrualsAfterFD_PY2008": true,
+    "offersProhibitedPayments": true,
+    "offersUCEB": true,
+    "hasLiabilityIncreasingAmendments": true
+  },
+
+  "events": {
+    "bankruptcy": {
+      "periods": [
+        {
+          "startDate": "2020-06-30",
+          "endDate": "2021-12-31",
+          "docRef": {
+            "docId": "DOC-BK-001",
+            "ipsRef": "IPS-0301",
+            "page": 1,
+            "quote": "Petition date 06/30/2020."
+          }
+        }
+      ]
+    },
+
+    "ucebEvents": [
+      {
+        "eventDate": "2020-04-15",
+        "eventType": "shutdown",
+        "description": "Plant shutdown event triggering shutdown benefit enhancement.",
+        "docRef": {
+          "docId": "DOC-PLAN-2019",
+          "ipsRef": "IPS-0001",
+          "page": 155,
+          "section": "Shutdown Benefits",
+          "quote": "Unpredictable contingent event benefit payable upon shutdown."
+        }
+      }
+    ],
+
+    "amendments": [
+      {
+        "adoptionDate": "2020-03-15",
+        "effectiveDate": "2020-01-01",
+        "increasesLiability": true,
+        "description": "Benefit formula enhancement for a closed group.",
+        "exceptionFlags": {
+          "mandatoryVestingOnly": false,
+          "compLimit401a17Only": false,
+          "futureOnlyAfterDOPT": false
+        },
+        "docRef": {
+          "docId": "DOC-AMEND-2020-01",
+          "ipsRef": "IPS-0201",
+          "page": 2,
+          "quote": "Effective 01/01/2020; increases accrued benefits."
+        }
+      }
+    ],
+
+    "prohibitedPaymentForms": [
+      {
+        "formCode": "LS",
+        "formName": "Single Sum Lump Sum",
+        "category": "lump_sum",
+        "docRef": {
+          "docId": "DOC-PLAN-2019",
+          "ipsRef": "IPS-0001",
+          "page": 90,
+          "section": "Optional Forms of Benefit",
+          "quote": "Lump sum option available to eligible participants."
+        }
+      },
+      {
+        "formCode": "PLS",
+        "formName": "Partial Lump Sum with Residual Annuity",
+        "category": "partial_lump_sum",
+        "docRef": {
+          "docId": "DOC-PLAN-2019",
+          "ipsRef": "IPS-0001",
+          "page": 93,
+          "section": "Optional Forms of Benefit"
+        }
+      }
+    ],
+
+    "prohibitedPaymentActivity": {
+      "scope": "includes_activity",
+      "applications": [
+        {
+          "participantId": "P-000123",
+          "filingDate": "2021-09-01",
+          "annuityStartingDate": "2021-10-01",
+          "benefitCommencementDate": "2021-10-01",
+          "electedFormCode": "LS",
+          "isProhibitedPaymentForm": true,
+          "paidAsOfDOPT": false,
+          "docRef": {
+            "docId": "DOC-APP-001",
+            "ipsRef": "IPS-0401",
+            "page": 3,
+            "quote": "Election: Lump Sum; ASD: 10/01/2021."
+          }
+        }
+      ],
+      "payments": [
+        {
+          "participantId": "P-000456",
+          "payDate": "2021-08-15",
+          "amount": 25000.0,
+          "formCode": "PLS",
+          "paymentType": "partial_lump_sum",
+          "docRef": {
+            "docId": "DOC-PAYREG-2021",
+            "ipsRef": "IPS-0501",
+            "page": 1,
+            "quote": "Payment type PLS paid 08/15/2021."
+          }
+        }
+      ]
+    }
+  },
+
+  "assumptions": [
+    {
+      "assumptionId": "ASM-001",
+      "text": "Where the Schedule SB is the only source, the AFTAP certification date used is the date stated in the Schedule SB AFTAP disclosure table.",
+      "docRefs": [
+        {
+          "docId": "DOC-SB-2019",
+          "ipsRef": "IPS-0101",
+          "page": 8
+        }
+      ]
+    }
+  ],
+
+  "qa": {
+    "preDOTRAdministrationAccepted": false,
+    "notes": "Case will evaluate whether any prohibited payment forms were improperly paid during restricted periods."
+  }
+}

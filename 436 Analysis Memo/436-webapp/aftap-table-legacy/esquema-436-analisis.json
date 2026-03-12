@@ -1,0 +1,568 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pbgc.example/schemas/case-436-input.schema.json",
+  "title": "PBGC IRC 436 Analysis - Comprehensive Input Schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "caseHeader",
+    "plan",
+    "documents",
+    "aftap",
+    "planFeatures",
+    "events"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^v\\d+\\.\\d+\\.\\d+$"
+    },
+    "dataVersion": {
+      "type": "string",
+      "pattern": "^v\\d+\\.\\d+\\.\\d+$"
+    },
+    "caseHeader": { "$ref": "#/$defs/caseHeader" },
+    "plan": { "$ref": "#/$defs/plan" },
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/document" }
+    },
+    "aftap": { "$ref": "#/$defs/aftapPackage" },
+    "planFeatures": { "$ref": "#/$defs/planFeatures" },
+    "events": { "$ref": "#/$defs/eventsPackage" },
+    "assumptions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/assumption" }
+    },
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preDOTRAdministrationAccepted": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "plan": {
+            "properties": { "isCBAPlan": { "const": true } },
+            "required": ["isCBAPlan"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "events": {
+            "required": ["collectiveBargaining"],
+            "properties": {
+              "collectiveBargaining": {
+                "required": ["ratificationDate", "effectiveDate", "expirationDate"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "plan": {
+            "properties": { "hasBankruptcy": { "const": true } },
+            "required": ["hasBankruptcy"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "events": {
+            "required": ["bankruptcy"],
+            "properties": {
+              "bankruptcy": {
+                "required": ["periods"],
+                "properties": { "periods": { "minItems": 1 } }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planFeatures": {
+            "properties": { "offersUCEB": { "const": true } },
+            "required": ["offersUCEB"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "events": {
+            "required": ["ucebEvents"],
+            "properties": {
+              "ucebEvents": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planFeatures": {
+            "properties": { "hasLiabilityIncreasingAmendments": { "const": true } },
+            "required": ["hasLiabilityIncreasingAmendments"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "events": {
+            "required": ["amendments"],
+            "properties": { "amendments": { "minItems": 1 } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "planFeatures": {
+            "properties": { "offersProhibitedPayments": { "const": true } },
+            "required": ["offersProhibitedPayments"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "events": {
+            "required": ["prohibitedPaymentForms"],
+            "properties": {
+              "prohibitedPaymentForms": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "events": {
+            "properties": {
+              "prohibitedPaymentActivity": {
+                "properties": { "scope": { "const": "includes_activity" } },
+                "required": ["scope"]
+              }
+            },
+            "required": ["prohibitedPaymentActivity"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "events": {
+            "properties": {
+              "prohibitedPaymentActivity": {
+                "required": ["applications", "payments"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+
+  "$defs": {
+    "caseHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planName", "ein", "pn", "pbgcCaseNo", "dopt"],
+      "properties": {
+        "planName": { "type": "string", "minLength": 1 },
+        "ein": { "type": "string", "pattern": "^[0-9]{2}-[0-9]{7}$" },
+        "pn": { "type": "string", "pattern": "^[0-9]{3}$" },
+        "pbgcCaseNo": { "type": "string", "minLength": 1 },
+        "dopt": { "type": "string", "format": "date" },
+        "dotr": { "type": "string", "format": "date" },
+        "bpd": { "type": "string", "format": "date" },
+        "dobf": { "type": "string", "format": "date" }
+      }
+    },
+
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planYear", "isCBAPlan", "hasBankruptcy"],
+      "properties": {
+        "planYear": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["startMMDD", "endsMMDD", "definitionDocRef"],
+          "properties": {
+            "startMMDD": { "type": "string", "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$" },
+            "endsMMDD": { "type": "string", "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$" },
+            "definitionDocRef": { "$ref": "#/$defs/docRef" }
+          }
+        },
+        "isCBAPlan": { "type": "boolean" },
+        "hasBankruptcy": { "type": "boolean" }
+      }
+    },
+
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["docId", "docType", "title"],
+      "properties": {
+        "docId": { "type": "string", "minLength": 1 },
+        "docType": {
+          "type": "string",
+          "enum": [
+            "PLAN_DOC",
+            "RESTATEMENT",
+            "AMENDMENT",
+            "SPD",
+            "CBA",
+            "FORM_5500",
+            "SCHEDULE_SB",
+            "AVR",
+            "ACTUARY_LETTER",
+            "BANKRUPTCY_DOC",
+            "TRUST_STATEMENT",
+            "PAYMENT_REGISTER",
+            "PAYMENT_HISTORY",
+            "BENEFIT_APPLICATION",
+            "PBGC_MEMO",
+            "OTHER"
+          ]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "docDate": { "type": "string", "format": "date" },
+        "effectiveDate": { "type": "string", "format": "date" },
+        "adoptionDate": { "type": "string", "format": "date" },
+        "ipsRef": { "type": "string" },
+        "fileName": { "type": "string" },
+        "pageCount": { "type": "integer", "minimum": 0 },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "docRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["docId"],
+      "properties": {
+        "docId": { "type": "string", "minLength": 1 },
+        "ipsRef": { "type": "string" },
+        "page": { "type": "integer", "minimum": 1 },
+        "pageEnd": { "type": "integer", "minimum": 1 },
+        "section": { "type": "string" },
+        "quote": { "type": "string" }
+      }
+    },
+
+    "aftapPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coverage", "certifications", "missingYears"],
+      "properties": {
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["firstPlanYear", "lastPlanYear"],
+          "properties": {
+            "firstPlanYear": { "type": "integer", "minimum": 2007, "maximum": 2100 },
+            "lastPlanYear": { "type": "integer", "minimum": 2007, "maximum": 2100 }
+          }
+        },
+        "certifications": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/aftapCertification" }
+        },
+        "missingYears": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/aftapMissingYear" }
+        }
+      }
+    },
+
+    "aftapCertification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planYear", "certificationDate", "aftapType", "source", "docRef"],
+      "properties": {
+        "planYear": { "type": "integer", "minimum": 2007, "maximum": 2100 },
+        "certificationId": { "type": "string" },
+        "certificationDate": { "type": "string", "format": "date" },
+        "aftapType": { "type": "string", "enum": ["percent", "range"] },
+        "aftapPercent": { "type": "number", "minimum": 0, "maximum": 200 },
+        "aftapRange": {
+          "type": "string",
+          "enum": ["lt60", "ge60_lt70", "ge70_lt80", "ge80_lt90", "ge90_lt100", "ge100"]
+        },
+        "isRecertification": { "type": "boolean" },
+        "isMaterialChange": { "type": "boolean" },
+        "supersedesCertificationId": { "type": "string" },
+        "source": { "type": "string", "enum": ["AFTAP_CERT", "SB5500", "AVR", "ACTUARY_LETTER", "OTHER"] },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "aftapType": { "const": "percent" } }, "required": ["aftapType"] },
+          "then": { "required": ["aftapPercent"] }
+        },
+        {
+          "if": { "properties": { "aftapType": { "const": "range" } }, "required": ["aftapType"] },
+          "then": { "required": ["aftapRange"] }
+        }
+      ]
+    },
+
+    "aftapMissingYear": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planYear", "reason"],
+      "properties": {
+        "planYear": { "type": "integer", "minimum": 2007, "maximum": 2100 },
+        "reason": { "type": "string", "minLength": 1 },
+        "attemptedSources": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["AFTAP_CERT", "SB5500", "AVR", "ACTUARY_LETTER", "OTHER"] }
+        },
+        "docRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/docRef" }
+        }
+      }
+    },
+
+    "planFeatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hasAccrualsAfterFD_PY2008",
+        "offersProhibitedPayments",
+        "offersUCEB",
+        "hasLiabilityIncreasingAmendments"
+      ],
+      "properties": {
+        "hasAccrualsAfterFD_PY2008": { "type": "boolean" },
+        "offersProhibitedPayments": { "type": "boolean" },
+        "offersUCEB": { "type": "boolean" },
+        "hasLiabilityIncreasingAmendments": { "type": "boolean" }
+      }
+    },
+
+    "eventsPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prohibitedPaymentActivity"
+      ],
+      "properties": {
+        "collectiveBargaining": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ratificationDate", "effectiveDate", "expirationDate", "docRef"],
+          "properties": {
+            "ratificationDate": { "type": "string", "format": "date" },
+            "effectiveDate": { "type": "string", "format": "date" },
+            "expirationDate": { "type": "string", "format": "date" },
+            "docRef": { "$ref": "#/$defs/docRef" }
+          }
+        },
+        "bankruptcy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["periods"],
+          "properties": {
+            "periods": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/dateRangeWithRef" }
+            }
+          }
+        },
+        "ucebEvents": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ucebEvent" }
+        },
+        "amendments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/amendment" }
+        },
+        "prohibitedPaymentForms": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/prohibitedPaymentForm" }
+        },
+        "contributionEvents": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contributionEvent" }
+        },
+        "reliefElections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reliefElection" }
+        },
+        "prohibitedPaymentActivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scope", "applications", "payments"],
+          "properties": {
+            "scope": { "type": "string", "enum": ["plan_level_only", "includes_activity"] },
+            "applications": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/benefitApplication" }
+            },
+            "payments": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/paymentRecord" }
+            }
+          }
+        }
+      }
+    },
+
+    "dateRangeWithRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startDate", "docRef"],
+      "properties": {
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "ucebEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventDate", "eventType", "description", "docRef"],
+      "properties": {
+        "eventDate": { "type": "string", "format": "date" },
+        "eventType": { "type": "string", "enum": ["shutdown", "plant_closing", "other"] },
+        "description": { "type": "string", "minLength": 1 },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "amendment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adoptionDate", "effectiveDate", "increasesLiability", "description", "docRef"],
+      "properties": {
+        "adoptionDate": { "type": "string", "format": "date" },
+        "effectiveDate": { "type": "string", "format": "date" },
+        "increasesLiability": { "type": "boolean" },
+        "description": { "type": "string", "minLength": 1 },
+        "exceptionFlags": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mandatoryVestingOnly": { "type": "boolean" },
+            "compLimit401a17Only": { "type": "boolean" },
+            "futureOnlyAfterDOPT": { "type": "boolean" }
+          }
+        },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "prohibitedPaymentForm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formCode", "formName", "category", "docRef"],
+      "properties": {
+        "formCode": { "type": "string", "minLength": 1 },
+        "formName": { "type": "string", "minLength": 1 },
+        "category": {
+          "type": "string",
+          "enum": [
+            "lump_sum",
+            "partial_lump_sum",
+            "installments",
+            "term_certain",
+            "social_security_supplement",
+            "other_accelerated",
+            "unknown"
+          ]
+        },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "benefitApplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["participantId", "filingDate", "annuityStartingDate", "electedFormCode", "isProhibitedPaymentForm", "paidAsOfDOPT", "docRef"],
+      "properties": {
+        "participantId": { "type": "string", "minLength": 1 },
+        "filingDate": { "type": "string", "format": "date" },
+        "annuityStartingDate": { "type": "string", "format": "date" },
+        "benefitCommencementDate": { "type": "string", "format": "date" },
+        "electedFormCode": { "type": "string", "minLength": 1 },
+        "isProhibitedPaymentForm": { "type": "boolean" },
+        "paidAsOfDOPT": { "type": "boolean" },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "paymentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["participantId", "payDate", "amount", "formCode", "docRef"],
+      "properties": {
+        "participantId": { "type": "string", "minLength": 1 },
+        "payDate": { "type": "string", "format": "date" },
+        "amount": { "type": "number" },
+        "formCode": { "type": "string", "minLength": 1 },
+        "paymentType": { "type": "string", "enum": ["annuity", "lump_sum", "partial_lump_sum", "other", "unknown"] },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "contributionEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "amount", "docRef"],
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "amount": { "type": "number", "minimum": 0 },
+        "purpose": { "type": "string" },
+        "associatedRecertificationDate": { "type": "string", "format": "date" },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "reliefElection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["electionType", "planYear", "electionDate", "docRef"],
+      "properties": {
+        "electionType": { "type": "string", "enum": ["CARES_3608b", "OTHER"] },
+        "planYear": { "type": "integer", "minimum": 2007, "maximum": 2100 },
+        "electionDate": { "type": "string", "format": "date" },
+        "valueUsedDescription": { "type": "string" },
+        "docRef": { "$ref": "#/$defs/docRef" }
+      }
+    },
+
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assumptionId", "text"],
+      "properties": {
+        "assumptionId": { "type": "string", "minLength": 1 },
+        "text": { "type": "string", "minLength": 1 },
+        "docRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/docRef" }
+        }
+      }
+    }
+  }
+}

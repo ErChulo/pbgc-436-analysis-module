@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AFTAP & Funding Restriction Calculator – IRC §436</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .output-section { margin-top: 30px; }
+    label { display: inline-block; width: 220px; margin-top: 10px; }
+    input { margin-bottom: 10px; }
+    #analysis436 { margin-top: 30px; border: 1px solid #ccc; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>AFTAP & Funding Restriction Calculator – IRC §436</h1>
+  <p>
+    Upload your CSV file (fields: <code>PLAN_YEAR, AFTAP, CERTIFICATION_DATE, DOC_ID</code>).<br>
+    Before processing, please enter (in the format dd-mm-yyyy):
+  </p>
+  <div>
+    <label for="planStartInput">First Day of Plan Year:</label>
+    <input type="text" id="planStartInput" placeholder="01-01-2019">
+    <br>
+    <label for="doptInput">DOPT (Plan Termination Date):</label>
+    <input type="text" id="doptInput" placeholder="31-12-2023">
+    <br>
+    <label for="dataInput">Upload CSV File:</label>
+    <input type="file" id="dataInput" accept=".csv">
+    <br>
+    <button id="processBtn">Process Data</button>
+  </div>
+  
+  <div class="output-section">
+    <h2>AFTAP Periods Table</h2>
+    <table id="outputTable">
+      <thead>
+        <tr>
+          <th>PLAN_YEAR</th>
+          <th>AFTAP%</th>
+          <th>ACTUAL/PRESUMED</th>
+          <th>EFFECTIVE_DATES</th>
+          <th>RESTRICTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Output rows will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+  
+  <div id="analysis436" class="output-section">
+    <!-- 436 Analysis will be rendered here -->
+  </div>
+  
+  <script>
+    // --- Utility Functions ---
+    // Parse CSV text (assumes no quoted commas)
+    function parseCSV(text) {
+      return text.trim().split('\n').map(line => line.split(',').map(item => item.trim()));
+    }
+    
+    // Custom parseDate function to handle dd-mm-yyyy format.
+    // If the first part is 2 digits, assume format is dd-mm-yyyy.
+    function parseDateCustom(dateStr) {
+      if (!dateStr) return null;
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return null;
+      // Check if the first element length is 2 (dd)
+      if (parts[0].length === 2) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // month is 0-indexed
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+      } else {
+        // Assume ISO-like format (yyyy-mm-dd)
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+      }
+    }
+    
+    // Wrapper: use parseDateCustom.
+    function parseDate(dateStr) {
+      return parseDateCustom(dateStr);
+    }
+    
+    // Format date as YYYY-MM-DD.
+    function formatDate(date) {
+      if (!date) return '';
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    
+    // Returns month difference (ignoring days) between two dates.
+    function monthsDiff(start, end) {
+      return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    }
+    
+    // --- Core Processing Function ---
+    // Processes one CSV record.
+    // globalPlanStart: Date (first day of plan year, provided by user).
+    // globalDOPT: Date (termination date) or null.
+    // lastYearAFTAP: previous effective AFTAP (if available) for adjustment.
+    function processRecord(record, globalPlanStart, globalDOPT, lastYearAFTAP) {
+      // CSV fields: PLAN_YEAR, AFTAP, CERTIFICATION_DATE, DOC_ID
+      const planYear = parseInt(record.PLAN_YEAR, 10);
+      // Construct planStart using the planYear and the month/day from globalPlanStart.
+      const planStart = new Date(planYear, globalPlanStart.getMonth(), globalPlanStart.getDate());
+      const nextPlanStart = new Date(planYear + 1, globalPlanStart.getMonth(), globalPlanStart.getDate());
+      
+      const certDate = parseDate(record.CERTIFICATION_DATE);
+      const doptDate = globalDOPT; // already a Date or null
+      
+      let aftapValue = parseFloat(record.AFTAP);
+      let aftapNote = 'Actual';
+      
+      // --- Calculate effective AFTAP if missing ---
+      if (isNaN(aftapValue)) {
+        if (certDate) {
+          const diff = monthsDiff(planStart, certDate);
+          if (diff >= 9) { 
+            // Certification on or after first day of 10th month → presumed underfunding per 436(h)(2)
+            aftapValue = 59;
+            aftapNote = 'Presumed (<60%) after 10th month';
+          } else if (diff >= 3 && lastYearAFTAP !== null && !isNaN(lastYearAFTAP)) {
+            // Certification after 4th month and previous effective AFTAP available.
+            if (lastYearAFTAP <= 70) {
+              aftapValue = lastYearAFTAP - 10;
+              aftapNote = 'Adjusted (last year - 10%)';
+            } else {
+              aftapNote = 'Unknown until certification';
+            }
+          } else {
+            aftapNote = 'Unknown until certification';
+          }
+        } else {
+          aftapNote = 'No certification date provided';
+        }
+      }
+      
+      // --- Build output rows ---
+      let outputRows = [];
+      if (certDate) {
+        // Pre-Certification period row.
+        const period1Start = planStart;
+        let period1End = new Date(certDate.getTime() - 86400000); // one day before certification
+        if (period1End < period1Start) period1End = period1Start;
+        outputRows.push({
+          PLAN_YEAR: planYear,
+          AFTAP: 'N/A',
+          AFTAP_Note: 'Pending certification',
+          effectiveDates: `[${formatDate(period1Start)} to ${formatDate(period1End)}]`,
+          restrictions: 'No restrictions applied (pending certification)'
+        });
+        
+        // Post-Certification period row.
+        const period2Start = certDate;
+        let period2End = nextPlanStart;
+        let doptNote = '';
+        if (doptDate && doptDate >= certDate && doptDate < nextPlanStart) {
+          period2End = doptDate;
+          doptNote = ' | DOPT in effect: restrictions permanent after DOPT';
+        }
+        
+        let restrictions = '';
+        if (!isNaN(aftapValue)) {
+          if (aftapValue < 60) {
+            restrictions = '436(b)/(e): UCEBs restricted; Benefit accruals frozen; Prohibited payments disallowed';
+          } else if (aftapValue < 80) {
+            restrictions = '436(d): Limited prohibited payments (lump sums restricted)';
+          } else {
+            restrictions = 'No funding-based restrictions';
+          }
+        } else {
+          restrictions = 'AFTAP unknown; restrictions pending certification';
+        }
+        restrictions += doptNote;
+        
+        outputRows.push({
+          PLAN_YEAR: planYear,
+          AFTAP: !isNaN(aftapValue) ? aftapValue + '%' : 'N/A',
+          AFTAP_Note: aftapNote,
+          effectiveDates: `[${formatDate(period2Start)} to ${formatDate(period2End)}]`,
+          restrictions: restrictions
+        });
+      } else {
+        // No certification date: one row covering the full plan year.
+        outputRows.push({
+          PLAN_YEAR: planYear,
+          AFTAP: 'N/A',
+          AFTAP_Note: 'No certification date provided',
+          effectiveDates: `[${formatDate(planStart)} to ${formatDate(nextPlanStart)}]`,
+          restrictions: 'AFTAP unknown; restrictions pending certification'
+        });
+      }
+      
+      return outputRows;
+    }
+    
+    // --- Process All CSV Rows ---
+    function processData(dataRows) {
+      // CSV header: PLAN_YEAR, AFTAP, CERTIFICATION_DATE, DOC_ID
+      const header = dataRows[0];
+      const planYearIdx = header.indexOf('PLAN_YEAR');
+      const aftapIdx = header.indexOf('AFTAP');
+      const certDateIdx = header.indexOf('CERTIFICATION_DATE');
+      
+      let allRows = [];
+      let lastEffectiveAFTAP = null;
+      
+      // Get user inputs (in dd-mm-yyyy format).
+      const globalPlanStartInput = document.getElementById('planStartInput').value;
+      const globalDOPTInput = document.getElementById('doptInput').value;
+      if (!globalPlanStartInput) {
+        alert('Please input the First Day of Plan Year.');
+        return [];
+      }
+      const globalPlanStart = parseDate(globalPlanStartInput);
+      const globalDOPT = globalDOPTInput ? parseDate(globalDOPTInput) : null;
+      
+      // Process each row (skip header)
+      for (let i = 1; i < dataRows.length; i++) {
+        const row = dataRows[i];
+        if (row.length < 4 || row[0] === "") continue;
+        const record = {
+          PLAN_YEAR: row[planYearIdx],
+          AFTAP: row[aftapIdx],
+          CERTIFICATION_DATE: row[certDateIdx]
+          // DOC_ID is not used in calculations.
+        };
+        const rowsOut = processRecord(record, globalPlanStart, globalDOPT, lastEffectiveAFTAP);
+        rowsOut.forEach(r => {
+          if (r.AFTAP !== 'N/A' && !isNaN(parseFloat(r.AFTAP))) {
+            lastEffectiveAFTAP = parseFloat(r.AFTAP);
+          }
+        });
+        allRows = allRows.concat(rowsOut);
+      }
+      
+      return allRows;
+    }
+    
+    // --- Render AFTAP Periods Table ---
+    function renderTable(rows) {
+      const tbody = document.querySelector('#outputTable tbody');
+      tbody.innerHTML = '';
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.PLAN_YEAR}</td>
+          <td>${row.AFTAP}</td>
+          <td>${row.AFTAP_Note}</td>
+          <td>${row.effectiveDates}</td>
+          <td>${row.restrictions}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    // --- Render 436 Analysis ---
+    function render436Analysis(rows) {
+      const analysis436_b = new Set(); // For AFTAP < 60%
+      const analysis436_d = new Set(); // For AFTAP between 60% and 80%
+      
+      rows.forEach(row => {
+        if (row.AFTAP !== 'N/A' && !isNaN(parseFloat(row.AFTAP))) {
+          const aftapVal = parseFloat(row.AFTAP);
+          const planYear = row.PLAN_YEAR;
+          if (aftapVal < 60) {
+            analysis436_b.add(planYear);
+          } else if (aftapVal < 80) {
+            analysis436_d.add(planYear);
+          }
+        }
+      });
+      
+      let html = '<h2>436 Analysis</h2><ul>';
+      html += `<li>(1) 436(b): The plan is subject to a 436(b) limitation in ${Array.from(analysis436_b).sort().join(', ')} because the AFTAP was below 60%, restricting UCEBs and freezing benefit accruals.</li>`;
+      html += `<li>(2) 436(c): No significant 436(c) limitations were identified.</li>`;
+      html += `<li>(3) 436(d): The plan is subject to a 436(d) limitation in ${Array.from(analysis436_d).sort().join(', ')} due to an AFTAP between 60% and 80%, limiting prohibited payments (e.g. lump sums).</li>`;
+      html += `<li>(4) 436(e): The plan is subject to a 436(e) limitation in ${Array.from(analysis436_b).sort().join(', ')} as benefit accruals were frozen due to an AFTAP below 60%.</li>`;
+      html += '</ul>';
+      
+      document.getElementById('analysis436').innerHTML = html;
+    }
+    
+    // --- Event Listener for File Processing ---
+    document.getElementById('processBtn').addEventListener('click', () => {
+      const fileInput = document.getElementById('dataInput');
+      if (fileInput.files.length === 0) {
+        alert('Please upload a CSV file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const dataRows = parseCSV(text);
+        const processedRows = processData(dataRows);
+        renderTable(processedRows);
+        render436Analysis(processedRows);
+      };
+      reader.readAsText(fileInput.files[0]);
+    });
+  </script>
+</body>
+</html>

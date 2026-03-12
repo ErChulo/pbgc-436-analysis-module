@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>eCFR API Explorer (solo navegador)</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+    header { padding: 16px 18px; border-bottom: 1px solid rgba(127,127,127,.35); }
+    header h1 { margin: 0 0 4px 0; font-size: 18px; }
+    header p { margin: 0; opacity: .8; font-size: 13px; }
+    main { display: grid; gap: 14px; padding: 16px 18px; grid-template-columns: 1fr; }
+    @media (min-width: 980px) { main { grid-template-columns: 420px 1fr; } }
+    section { border: 1px solid rgba(127,127,127,.35); border-radius: 10px; padding: 12px; }
+    section h2 { margin: 0 0 10px 0; font-size: 14px; letter-spacing: .2px; }
+    label { display: block; font-size: 12px; margin: 10px 0 6px; opacity: .85; }
+    input[type="text"], textarea, select {
+      width: 100%; box-sizing: border-box; padding: 10px 10px;
+      border: 1px solid rgba(127,127,127,.45); border-radius: 8px;
+      background: transparent;
+      font: inherit; font-size: 13px;
+    }
+    textarea { min-height: 78px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 980px) { .row.two { grid-template-columns: 1fr 1fr; } }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    button {
+      padding: 9px 11px; border-radius: 8px;
+      border: 1px solid rgba(127,127,127,.5);
+      background: transparent; font: inherit; font-size: 13px;
+      cursor: pointer;
+    }
+    button.primary { border-width: 2px; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid rgba(127,127,127,.25); font-size: 12px; }
+    th { opacity: .8; font-weight: 600; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(127,127,127,.45); font-size: 12px; }
+    .status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    pre {
+      margin: 10px 0 0; padding: 10px; border-radius: 10px;
+      border: 1px solid rgba(127,127,127,.35);
+      overflow: auto;
+      max-height: 70vh;
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .hint { margin-top: 8px; font-size: 12px; opacity: .85; }
+    .warn { color: #b00020; }
+    .ok { color: #0a7a2f; }
+    .muted { opacity: .75; }
+    .small { font-size: 12px; }
+    .inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .checkbox { display: inline-flex; gap: 8px; align-items: center; user-select: none; }
+    .checkbox input { width: 16px; height: 16px; }
+    details { margin-top: 10px; }
+    details summary { cursor: pointer; font-size: 12px; opacity: .9; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>eCFR API Explorer (solo navegador)</h1>
+    <p>Página estática para consultar el API de eCFR desde el navegador (sin backend). Si CORS bloquea, usa el proxy opcional.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Request</h2>
+
+      <label for="preset">Presets</label>
+      <select id="preset">
+        <option value="">— Elegir preset —</option>
+        <option value="titles">Listar títulos (versioner)</option>
+        <option value="agencies">Listar agencias (admin)</option>
+        <option value="searchTax">Buscar “tax” (search)</option>
+        <option value="custom">Custom (mantener inputs)</option>
+      </select>
+
+      <div class="row two">
+        <div>
+          <label for="baseUrl">Base URL</label>
+          <input id="baseUrl" type="text" value="https://www.ecfr.gov" />
+        </div>
+        <div>
+          <label for="path">Path</label>
+          <input id="path" type="text" value="/api/versioner/v1/titles.json" />
+        </div>
+      </div>
+
+      <label>Query parameters</label>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:42%;">Key</th>
+            <th style="width:48%;">Value</th>
+            <th style="width:10%;">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody id="paramsBody"></tbody>
+      </table>
+      <div class="actions">
+        <button id="addParam">Añadir parámetro</button>
+        <button id="clearParams">Limpiar</button>
+      </div>
+
+      <label>Headers (JSON)</label>
+      <textarea id="headers" class="mono" spellcheck="false">{"Accept":"application/json"}</textarea>
+
+      <div class="inline" style="margin-top:10px;">
+        <label class="checkbox">
+          <input id="useProxy" type="checkbox" />
+          Usar proxy CORS público (allorigins.win)
+        </label>
+        <span class="small muted">(Úsalo solo si el navegador bloquea la llamada directa.)</span>
+      </div>
+
+      <div class="actions">
+        <button id="send" class="primary">Enviar</button>
+        <button id="cancel" disabled>Cancelar</button>
+        <button id="copyUrl">Copiar URL final</button>
+      </div>
+
+      <details>
+        <summary>Notas (importante)</summary>
+        <div class="hint">
+          Abrir este archivo como <span class="mono">file://</span> suele fallar. Sírvelo como sitio estático (GitHub Pages, Netlify, etc.).
+          Esto no requiere backend.
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <h2>Response</h2>
+      <div class="status">
+        <span class="pill" id="statusCode">—</span>
+        <span class="pill" id="timing">—</span>
+        <span class="pill" id="bytes">—</span>
+        <a id="downloadLink" class="pill" style="display:none; text-decoration:none;" download="ecfr-response.txt">Descargar</a>
+      </div>
+
+      <div id="message" class="hint muted"></div>
+      <pre id="output" class="mono">(sin respuesta aún)</pre>
+
+      <details>
+        <summary>Solución de problemas CORS</summary>
+        <div class="hint">
+          Si ves “Failed to fetch” o un error CORS en la consola del navegador, activa <b>Usar proxy CORS</b> y vuelve a intentar.
+        </div>
+      </details>
+    </section>
+  </main>
+
+<script>
+(() => {
+  const els = {
+    preset: document.getElementById('preset'),
+    baseUrl: document.getElementById('baseUrl'),
+    path: document.getElementById('path'),
+    paramsBody: document.getElementById('paramsBody'),
+    addParam: document.getElementById('addParam'),
+    clearParams: document.getElementById('clearParams'),
+    headers: document.getElementById('headers'),
+    useProxy: document.getElementById('useProxy'),
+    send: document.getElementById('send'),
+    cancel: document.getElementById('cancel'),
+    copyUrl: document.getElementById('copyUrl'),
+    statusCode: document.getElementById('statusCode'),
+    timing: document.getElementById('timing'),
+    bytes: document.getElementById('bytes'),
+    output: document.getElementById('output'),
+    message: document.getElementById('message'),
+    downloadLink: document.getElementById('downloadLink'),
+  };
+
+  const STORAGE_KEY = "ecfr_api_explorer_state_v1";
+  const CORS_PROXY_PREFIX = "https://api.allorigins.win/raw?url=";
+
+  let abortController = null;
+  let lastBlobUrl = null;
+
+  function setMessage(text, kind = "muted") {
+    els.message.textContent = text || "";
+    els.message.className = "hint " + (kind || "muted");
+  }
+
+  function fmtBytes(n) {
+    if (!Number.isFinite(n) || n < 0) return "—";
+    const units = ["B","KB","MB","GB"];
+    let i = 0, x = n;
+    while (x >= 1024 && i < units.length - 1) { x /= 1024; i++; }
+    const val = (i === 0) ? String(Math.round(x)) : x.toFixed(2);
+    return `${val} ${units[i]}`;
+  }
+
+  function readHeadersJson() {
+    const raw = els.headers.value.trim();
+    if (!raw) return {};
+    const obj = JSON.parse(raw);
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
+      throw new Error("Headers debe ser un objeto JSON.");
+    }
+    return obj;
+  }
+
+  function addParamRow(key = "", value = "") {
+    const tr = document.createElement("tr");
+
+    const tdK = document.createElement("td");
+    const k = document.createElement("input");
+    k.type = "text"; k.value = key; k.placeholder = "p.ej. query";
+    tdK.appendChild(k);
+
+    const tdV = document.createElement("td");
+    const v = document.createElement("input");
+    v.type = "text"; v.value = value; v.placeholder = "p.ej. tax";
+    tdV.appendChild(v);
+
+    const tdX = document.createElement("td");
+    const del = document.createElement("button");
+    del.textContent = "✕";
+    del.title = "Eliminar";
+    del.addEventListener("click", () => tr.remove());
+    tdX.appendChild(del);
+
+    tr.appendChild(tdK);
+    tr.appendChild(tdV);
+    tr.appendChild(tdX);
+
+    els.paramsBody.appendChild(tr);
+  }
+
+  function clearParams() {
+    els.paramsBody.innerHTML = "";
+  }
+
+  function getParams() {
+    const rows = [...els.paramsBody.querySelectorAll("tr")];
+    const kvs = [];
+    for (const row of rows) {
+      const inputs = row.querySelectorAll("input");
+      const key = (inputs[0]?.value || "").trim();
+      const val = (inputs[1]?.value || "").trim();
+      if (!key) continue;
+      kvs.push([key, val]);
+    }
+    return kvs;
+  }
+
+  function buildFinalUrl() {
+    const base = els.baseUrl.value.trim().replace(/\/+$/, "");
+    const p = els.path.value.trim();
+    const path = p.startsWith("/") ? p : ("/" + p);
+    const url = new URL(base + path);
+    for (const [k, v] of getParams()) url.searchParams.append(k, v);
+
+    if (els.useProxy.checked) {
+      return CORS_PROXY_PREFIX + encodeURIComponent(url.toString());
+    }
+    return url.toString();
+  }
+
+  function setStatus({ code = "—", ms = "—", bytes = "—" } = {}) {
+    els.statusCode.textContent = code;
+    els.timing.textContent = ms;
+    els.bytes.textContent = bytes;
+  }
+
+  function setDownload(content, filename = "ecfr-response.txt") {
+    if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    lastBlobUrl = URL.createObjectURL(blob);
+    els.downloadLink.href = lastBlobUrl;
+    els.downloadLink.download = filename;
+    els.downloadLink.style.display = "inline-block";
+  }
+
+  function clearDownload() {
+    if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
+    lastBlobUrl = null;
+    els.downloadLink.style.display = "none";
+    els.downloadLink.removeAttribute("href");
+  }
+
+  async function sendRequest() {
+    clearDownload();
+    setMessage("");
+    els.output.textContent = "(cargando...)";
+    setStatus();
+
+    const finalUrl = buildFinalUrl();
+
+    let headers;
+    try {
+      headers = readHeadersJson();
+    } catch (e) {
+      els.output.textContent = "";
+      setMessage("Headers JSON inválido: " + e.message, "warn");
+      return;
+    }
+
+    abortController = new AbortController();
+    els.send.disabled = true;
+    els.cancel.disabled = false;
+
+    const t0 = performance.now();
+    try {
+      const resp = await fetch(finalUrl, { method: "GET", headers, signal: abortController.signal });
+      const t1 = performance.now();
+      const ms = Math.round(t1 - t0);
+
+      const contentType = (resp.headers.get("content-type") || "").toLowerCase();
+      const text = await resp.text();
+
+      setStatus({
+        code: `${resp.status} ${resp.statusText || ""}`.trim(),
+        ms: `${ms} ms`,
+        bytes: fmtBytes(text.length)
+      });
+
+      let pretty = text;
+      let filename = "ecfr-response.txt";
+
+      if (contentType.includes("application/json") || text.trim().startsWith("{") || text.trim().startsWith("[")) {
+        try {
+          pretty = JSON.stringify(JSON.parse(text), null, 2);
+          filename = "ecfr-response.json";
+        } catch { /* keep raw */ }
+      }
+
+      els.output.textContent = pretty;
+      setDownload(pretty, filename);
+
+      if (!resp.ok) setMessage("Completado, pero status no es 2xx. Mira el payload arriba.", "warn");
+      else setMessage("Completado OK.", "ok");
+    } catch (err) {
+      const t1 = performance.now();
+      const ms = Math.round(t1 - t0);
+      setStatus({ code: "ERROR", ms: `${ms} ms`, bytes: "—" });
+      els.output.textContent = "";
+
+      if (err?.name === "AbortError") {
+        setMessage("Solicitud cancelada.", "muted");
+        els.output.textContent = "(cancelada)";
+      } else {
+        setMessage(
+          "Falló el fetch. Si es un error CORS, activa “Usar proxy CORS” y reintenta. (Revisa la consola del navegador.)",
+          "warn"
+        );
+      }
+    } finally {
+      abortController = null;
+      els.send.disabled = false;
+      els.cancel.disabled = true;
+      saveState();
+    }
+  }
+
+  function cancelRequest() {
+    if (abortController) abortController.abort();
+  }
+
+  async function copyUrl() {
+    try {
+      await navigator.clipboard.writeText(buildFinalUrl());
+      setMessage("URL final copiada.", "ok");
+    } catch {
+      setMessage("No se pudo copiar al portapapeles en este contexto.", "warn");
+    }
+  }
+
+  function applyPreset(value) {
+    if (!value || value === "custom") return;
+    clearParams();
+
+    if (value === "titles") {
+      els.baseUrl.value = "https://www.ecfr.gov";
+      els.path.value = "/api/versioner/v1/titles.json";
+    } else if (value === "agencies") {
+      els.baseUrl.value = "https://www.ecfr.gov";
+      els.path.value = "/api/admin/v1/agencies.json";
+    } else if (value === "searchTax") {
+      els.baseUrl.value = "https://www.ecfr.gov";
+      els.path.value = "/api/search/v1/results.json";
+      addParamRow("date", "current");
+      addParamRow("order", "relevance");
+      addParamRow("query", "tax");
+      addParamRow("results", "10");
+    }
+    saveState();
+  }
+
+  function saveState() {
+    const state = {
+      baseUrl: els.baseUrl.value,
+      path: els.path.value,
+      headers: els.headers.value,
+      useProxy: els.useProxy.checked,
+      params: getParams()
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      if (state?.baseUrl) els.baseUrl.value = state.baseUrl;
+      if (state?.path) els.path.value = state.path;
+      if (typeof state?.headers === "string") els.headers.value = state.headers;
+      if (typeof state?.useProxy === "boolean") els.useProxy.checked = state.useProxy;
+      if (Array.isArray(state?.params)) {
+        clearParams();
+        for (const [k, v] of state.params) addParamRow(k, v);
+      }
+    } catch {}
+  }
+
+  els.addParam.addEventListener("click", () => addParamRow());
+  els.clearParams.addEventListener("click", () => clearParams());
+  els.send.addEventListener("click", sendRequest);
+  els.cancel.addEventListener("click", cancelRequest);
+  els.copyUrl.addEventListener("click", copyUrl);
+  els.preset.addEventListener("change", (e) => applyPreset(e.target.value));
+
+  loadState();
+  if (els.paramsBody.children.length === 0) addParamRow();
+})();
+</script>
+</body>
+</html>

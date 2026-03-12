@@ -1,0 +1,69 @@
+Sample Language for Part 4 436 Determination
+
+Sample Language for Section 436(b)
+
+The plan did not provide a UCEB due to an event occurring on or after the first day of PY2008.
+
+The plan is not subject to a 436(b) limitation since the plan was not in effect for five plan years.
+
+Sample Language for Section 436(c)
+
+The plan did not have a plan amendment increasing benefit liabilities with an effective or adoption date on or after the first day of PY2008.
+
+The plan had an amendment, effective and adopted 5/1/2008, which could potentially increase the accrued benefits of some participants. However, because the 2008 Transitional rule was in effect at the time, the amendment was permitted to go into effect with no impact from 436(c).
+
+The plan had an amendment, effective 2/1/2008, which increased benefits. However, because this plan was collectively bargained, with a CBA which terminated 1/31/2008, 436(c) does not apply to benefit increases prior to 1/1/2009.
+
+The amendment, adopted 11/8/2008 and effective 1/1/2009, that made all participants employed at the ABC facility as of 5/1/2008 100% vested, was not limited under 436(c). The 2009 AFTAP of 88.67%, dated 3/12/2009, is assumed to have taken the increase into account because the amendment was effective the 1st day of PY2009 and the AFTAP was certified after the effective date of the amendment during the same plan year.
+
+There were three benefit increases which came into effect during years one, two, and three of the CBA. The later of the effective and adoption dates for these three benefit increases are 4/28/2008, 4/28/2009, and 4/28/2010, respectively. Although there were benefit increases after the beginning of the 2008 plan year, all increases occurred prior to 1/1/2011 during which time the applicable AFTAPs were never below 80%. Therefore, no benefit increases were limited by the section 436(c) limitation. The plan also honored all benefit increases.
+
+The annual benefit rate increase effective 9/1/2008 could take effect because the 436(c) limitation was not applicable due to the CBA exception. Annual benefit rate increases effective 9/1/2009, 9/1/2010, and 9/1/2011 were not limited under 436(c) because of the exception for benefit increases based on compensation, and, therefore, could take effect. The percentage increase for these benefit rates were within a 2.91% to 3.20% range. During this same period, annual wage increases as stated in the applicable CBA, were within a 3.23% to 3.52% range. Therefore, these benefit increases do not exceed the contemporaneous increases in average wages of participants as described in 1.436-1(c)(4)(i), and the 436(c) limitation was not applicable.
+
+The plan is not subject to a 436(c) limitation since the plan was not in effect for five plan years.
+
+
+ 
+Sample Language for Section 436(d)
+
+The plan did not provide accelerated benefit distributions.
+
+The plan offered prohibited payments in the form of non-de minimis lump sums. Payment of non-de minimis lump sums was: 
+•	Not limited under 436(d) 1/1/2008 – 3/31/2009 because of the 2008 Transition Rule, the applicable AFTAPs were above 80%, and the plan sponsor was not in bankruptcy.
+•	Limited under 436(d)(3) 4/1/2009 – 9/29/2009 because the applicable AFTAP was between 60% and 80%.
+•	Limited under 436(d)(1) 9/30/2009 – DOPT because the applicable AFTAPs were below 60%.
+There is no evidence that non-de minimis lump sums were paid during or after the 2008 plan year.
+
+The plan offered prohibited payments in the form of non-de minimis lump sums. Payment of non-de minimis lump sums was: 
+•	Not limited under 436(d) 1/1/2008 – 3/31/2012 because of the 2008 Transition Rule, the applicable AFTAPs were above 80%, and the plan sponsor was not in bankruptcy.
+•	Limited under 436(d)(3) 4/1/2012 – 9/27/2012 because the applicable AFTAP was between 60% and 80%.
+•	Not limited under 436(d) 9/28/2012 – 9/8/2013 because the applicable AFTAPs were above 80% and the plan sponsor was not in bankruptcy.
+•	Limited under 436(d)(2) 9/9/2013 – DOPT because the applicable AFTAPs were below 100% and the plan sponsor was in bankruptcy. 
+Information provided by the prior plan administrator indicates that the plan properly implemented a 436(d) restriction. According to the prior plan administrator, two non-de minimis lump sum payments were made between 12/1/2011 and 3/1/2012 during a period when the applicable AFTAPs were above 80%, and non-de minimis lump sum payments were restricted to 50% of the present value from 4/1/2012 to 9/27/2012, while the presumed AFTAP was 70.00%. There is no evidence that prohibited payments were paid while the plan sponsor was in bankruptcy.
+
+Because the AFTAP was below 60% from 6/28/2008 through DOPT, a 436(d)(1) limitation was in effect which restricted payment of non-de minimis lump-sums. However, during the 4th quarter of the 2008 plan year, sixty non-de minimis lump-sums were paid to participants. According to the plan actuary, the plan attorney was contacted for direction; however, no elaboration on the issue was given and additional information from the plan actuary has not been forthcoming. This information has been given to OCC for purposes of determining if a fiduciary breach has occurred.
+
+
+Sample Language for Section 436(e)
+
+Benefit accruals through the 8/31/2008 freeze date are not limited under 436(e) due to the 2008 Transition Rule.
+
+Effective 1/2/2009, benefit accruals cease due to a 436(e) limitation because the applicable AFTAPs from 1/2/2009 through DOPT were less than 60%.
+
+No benefits accrued after the first day of PY2008 since benefit accruals were frozen as of 11/30/2006.
+
+Benefit accruals 1/1/2008 through the freeze date of 2/1/2012 were not limited under 436(e) because of the 2008 Transition Rule and the applicable AFTAPs were not below 60%.
+
+Benefit accruals from 1/1/2008 to 9/29/2009 were not limited under 436(e) because of the 2008 Transition Rule and the applicable AFTAPs were not below 60%. Because the AFTAP was less than 60% beginning 9/30/2009, benefits do not accrue on or after that date.
+
+Benefit accruals through 4/12/2009, the date of the benefit freeze, are not limited under section 436(e) because, due to the CBA exception, 436(e) was not applicable before 10/1/2009. The plan did not limit accruals prior to 4/12/2009.
+
+Prior to 10/1/2011, accruals were not limited under 436(e) because of the 2008 Transition Rule and the applicable AFTAPs were not less than 60%. However, from 10/1/2012 through DOPT, accruals ceased due to a 436(e) limitation because during this period the 2012 AFTAP was presumed to be less than 60%. The plan administrator acknowledged that participants could not accrue benefits on or after 10/1/2012. Accruals on and after BPD, 5/15/2012, may be subject to the rules in Policy 5.14-1 Benefits in PPA 2006 Bankruptcy Plans. 
+
+Benefit accruals from 1/1/2008 through the freeze date of 1/1/2010 were not limited under 436(e). For purposes of 436(e), the applicable AFTAP did not fall below 60% during the period from 1/1/2008 to 1/1/2010. WRERA provided, for purposes of 436(e), that the AFTAP for plan year 2009 is the greater of the 2008 AFTAP and the 2009 AFTAP. The 2008 AFTAP of 66.06% is greater than the 2009 AFTAP of 47.90% and therefore is used for the purpose of determining if the 436(e) limitation applied during plan year 2009. The plan does not appear to have limited any accruals under section 436 prior to 1/1/2010.
+
+Benefit accruals were not limited under 436(e). The 436(e) limitation applied and benefit accruals would have been limited from 6/1/2009 to 11/10/2009 because the presumed AFTAPs were less than 60%. However, under Policy 5.14-2, section E.6. Restoration of Accruals After §436(e) Limitation Ends, PBGC will assume that the plan would have restored these accruals based on the 2009 AFTAP certification of 77.62%, absent evidence that the plan did not or would not have restored the accruals or that the AFTAP did not include the accruals. The plan does not appear to have limited any accruals under section 436.
+
+Benefit accruals were not limited under section 436(e) due to the CBA exception and the subsequent AFTAPs were never below 60%. Benefit accruals for salaried participants, but not union participants, were frozen on 12/31/2009.
+
+The plan is not subject to a 436(e) limitation since the plan was not in effect for five plan years.
