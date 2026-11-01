@@ -20,7 +20,7 @@ These sources are in the private PBGC Book of Job; do not commit their full PDFs
 **Source consistency caveat:** The 2025 guide prints some RGB component values that do not numerically match its listed HEX values. For CSS/web, use the published **HEX column** above; flag any use requiring RGB/CMYK for human review rather than silently converting mismatched entries.
 
 ## Application-specific UI (not agency document requirements)
-- User preference: high-contrast **`#000000` background**; primary agency blue for links, focus or accents; agency red for restrained emphasis. Keep text legible and controls visibly differentiated.
+- User preference: high-contrast **`#000000` background**; use official agency blue/red in branding elements and restrained accents, but **do not use low-contrast agency-blue text directly on black**; derive accessible tonal variants for links, focus rings and foreground labels. Keep text legible and controls visibly differentiated.
 - A guided workflow: Case → Source Evidence → §436(b)/(c)/(d)/(e) Screening → AFTAP Certifications → Presumed/Actual Periods → Restrictions/Exceptions → Preview → Export for Review.
 - One main action at a time; visible provenance and “Unknown / Assumed / Supported / Reviewed” statuses. Prioritize keyboard access, responsive layout, review queues, and screen-reader labels.
 - No unapproved final-looking output: label draft/unreviewed findings; always show missing evidence and assumption indicators.
